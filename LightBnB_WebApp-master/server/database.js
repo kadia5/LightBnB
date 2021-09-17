@@ -92,9 +92,10 @@ exports.addUser = addUser;
 const getAllReservations = function(guest_id, limit = 10) {
   // return getAllProperties(null, 2);
   return pool
-  .query(`SELECT * FROM properties LIMIT 10`, [limit])
+  .query(`SELECT guest_id FROM reservations WHERE guest_id = $1 LIMIT $2`, [guest_id, limit])
   .then((result) => {
     console.log(result.rows);
+    return result.rows;
   })
   .catch((err) => {
     console.log(err.message);
@@ -112,22 +113,37 @@ exports.getAllReservations = getAllReservations;
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = function(options, limit = 10) {
-  // const limitedProperties = {};
-  // for (let i = 1; i <= limit; i++) {
-  //   limitedProperties[i] = properties[i];
-  // }
+  const limitedProperties = {};
+  let sql = "";
+  for (let i in options) {
+   sql = "city = \"Brampton\" AND minimum_price_per_night = 10"  
+  }
   // return Promise.resolve(limitedProperties);
   
     return pool
       .query(`SELECT * FROM properties LIMIT $1`, [limit])
       .then((result) => {
         console.log(result.rows);
+        return result.rows
       })
       .catch((err) => {
         console.log(err.message);
       });
   };
 exports.getAllProperties = getAllProperties;
+// const getAllReservations = function(guest_id, limit = 10) {
+//   return pool
+//   .query(`SELECT reservations.*, users.id FROM reservations
+//           JOIN users ON users.id = $1
+//           LIMIT $2`, 
+//   [guest_id, limit])
+//   .then((result) => {
+//     return result.rows[0];
+//   })
+//   .catch((err) => {
+//     return err.message;
+//   });
+// }
 
 
 /**
